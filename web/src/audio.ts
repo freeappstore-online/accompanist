@@ -1,0 +1,26 @@
+import { Accompanist } from './accompanist';
+import type { Piano } from './piano';
+
+/** One AudioContext, sampled piano and count-in click for the app. Created on the first user gesture. */
+export async function createAudio() {
+  const context = new AudioContext();
+  await context.resume();
+  const master = context.createGain();
+  master.gain.value = .8;
+  const compressor = context.createDynamicsCompressor();
+  compressor.threshold.value = -8; compressor.knee.value = 12; compressor.ratio.value = 4;
+  compressor.connect(master); master.connect(context.destination);
+  let piano: Piano;
+  try { piano = await (await import('./piano')).Piano.create(context, compressor); }
+  catch (error) { void context.close(); throw error; }
+  const click = (when: number, accent: boolean) => {
+    const osc = context.createOscillator(), gain = context.createGain();
+    osc.frequency.setValueAtTime(accent ? 1500 : 1000, when);
+    gain.gain.setValueAtTime(.4, when); gain.gain.exponentialRampToValueAtTime(.001, when + .035);
+    osc.connect(gain); gain.connect(context.destination);
+    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+    osc.start(when); osc.stop(when + .04);
+  };
+  const player = new Accompanist(() => context.currentTime, piano, click);
+  return { player, destroy: () => { player.stop(); piano.destroy(); void context.close(); } };
+}

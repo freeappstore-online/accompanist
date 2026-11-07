@@ -10,22 +10,26 @@
     "generate:icons": "pwa-assets-generator --manifest=false"
   },
   "dependencies": {
+    "@freeappstore/sdk": "^0.16.39",
+    "@tonejs/midi": "^2.0.28",
+    "opensheetmusicdisplay": "^2.2.1",
     "react": "^19",
     "react-dom": "^19",
-    "@freeappstore/sdk": "^0.16.39"
+    "spessasynth_core": "4.4.7",
+    "spessasynth_lib": "4.4.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1",
+    "@types/node": "^22.20.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vite-pwa/assets-generator": "1.0.4",
     "@vitejs/plugin-react": "^4.3",
+    "happy-dom": "^20.14.5",
     "tailwindcss": "^4.1",
     "typescript": "^5.7",
-    "@types/node": "^22.20.2",
-    "happy-dom": "^20.14.5",
-    "vitest": "^4.1.11",
     "vite": "^6",
     "vite-plugin-pwa": "^1.0",
-    "@vite-pwa/assets-generator": "1.0.4"
+    "vitest": "^4.1.11"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "accompanist",
-  "short_name": "accompanist",
+  "name": "Accompanist",
+  "short_name": "Accompanist",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -27,6 +27,13 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "description": "A piano accompanist that follows your voice and starts from any bar on command.",
+  "permissions": [
+    {
+      "name": "microphone",
+      "reason": "Listens for spoken commands such as “from bar 5”, “play” and “stop”."
     }
   ]
 }

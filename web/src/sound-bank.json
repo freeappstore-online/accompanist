@@ -1,0 +1,16 @@
+{
+  "name": "GeneralUser GS",
+  "version": "2.0.3",
+  "author": "S. Christian Collins",
+  "source": "https://github.com/mrbumpy409/GeneralUser-GS",
+  "revision": "684543d5e5efaef08d02be50dcda8d552478fa60",
+  "sourceUrl": "https://raw.githubusercontent.com/mrbumpy409/GeneralUser-GS/684543d5e5efaef08d02be50dcda8d552478fa60/GeneralUser-GS.sf2",
+  "url": "/sounds/generaluser-gs-2.0.3-8b7063977d38.sf3",
+  "bytes": 8384904,
+  "sha256": "8b7063977d38adf4363adb3c4922bc2aece4c8f62e7ef4ea62341505cb478349",
+  "sourceSha256": "9575028c7a1f589f5770fccc8cff2734566af40cd26ed836944e9a5152688cfe",
+  "license": "/sounds/GeneralUser-LICENSE.txt",
+  "modification": "Converted from SF2 to SF3 using Ogg Vorbis quality 5; instrument mappings, envelopes and sample loops preserved.",
+  "presets": 287,
+  "samples": 920
+}
