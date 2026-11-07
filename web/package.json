@@ -1,0 +1,31 @@
+{
+  "name": "@accompanist/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm generate:icons && vite",
+    "build": "pnpm generate:icons && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "generate:icons": "pwa-assets-generator --manifest=false"
+  },
+  "dependencies": {
+    "react": "^19",
+    "react-dom": "^19",
+    "@freeappstore/sdk": "^0.16.39"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.3",
+    "tailwindcss": "^4.1",
+    "typescript": "^5.7",
+    "@types/node": "^22.20.2",
+    "happy-dom": "^20.14.5",
+    "vitest": "^4.1.11",
+    "vite": "^6",
+    "vite-plugin-pwa": "^1.0",
+    "@vite-pwa/assets-generator": "1.0.4"
+  }
+}

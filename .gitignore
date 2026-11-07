@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+*.tsbuildinfo
+# Derived from icon.svg; remove these entries when using prebuilt custom icons.
+/web/public/favicon.ico
+/web/public/apple-touch-icon-180x180.png
+/web/public/pwa-64x64.png
+/web/public/pwa-192x192.png
+/web/public/pwa-512x512.png
+/web/public/maskable-icon-512x512.png

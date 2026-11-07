@@ -1,0 +1,21 @@
+{
+  "name": "accompanist",
+  "private": true,
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  },
+  "scripts": {
+    "dev": "pnpm --filter @accompanist/web dev",
+    "build": "pnpm --filter @accompanist/web build",
+    "preview": "pnpm --filter @accompanist/web preview",
+    "typecheck": "pnpm --filter @accompanist/web exec tsc -b",
+    "test": "pnpm --filter @accompanist/web test"
+  }
+}
