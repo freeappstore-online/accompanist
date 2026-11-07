@@ -22,3 +22,8 @@ it.each(SONGS.map(s => [s.id]))('%s: pinned assets, playable MIDI and a bar map 
   expect(end).toBeGreaterThan(measures.at(-1)!.start);
   expect(end).toBeLessThanOrEqual(measures.at(-1)!.end + 1e-6);
 });
+
+it('caro-mio-ben plays the piano only; the singer has the tune', () => {
+  const song = parseMidi(Uint8Array.from(readFileSync(resolve('public/songs/caro-mio-ben/accompaniment.mid'))).buffer, 'caro');
+  expect(song.tracks.map(t => t.name).filter(n => n)).toEqual(['pianoRH', 'pianoLH']);
+});

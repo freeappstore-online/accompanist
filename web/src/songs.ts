@@ -10,6 +10,9 @@ const OPERA = { source: 'Project Gutenberg · The Baby’s Opera', sourceUrl: 'h
 
 /** Static per-song assets live in /songs/<id>/ and load on demand; see README for provenance. */
 export const SONGS: SongInfo[] = [
+  { id: 'caro-mio-ben', title: 'Caro mio ben', composer: 'Attributed to Giuseppe Giordani (some sources: Tommaso Giordani)', source: 'Mutopia Project',
+    sourceUrl: 'https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/', rights: 'Public domain', edition: 'Typeset by Peter Chubb from the Boosey and Hawkes 1903 edition; the piano part plays and the voice is yours.',
+    license: '/songs/mutopia-caro-mio-ben.txt' },
   { id: 'three-blind-mice', title: 'Three Blind Mice', composer: 'Traditional', ...OPERA },
   { id: 'baa-baa-black-sheep', title: 'Baa, Baa, Black Sheep', composer: 'Traditional', ...OPERA },
   { id: 'london-bridge', title: 'London Bridge', composer: 'Traditional · arranged by Lucy Crane', source: 'Project Gutenberg · The Baby’s Bouquet', sourceUrl: 'https://www.gutenberg.org/ebooks/25432',

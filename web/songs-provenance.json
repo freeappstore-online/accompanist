@@ -1,14 +1,50 @@
 {
+  "caro-mio-ben": {
+    "accompaniment.mid": {
+      "script": "pipeline/caro_mio_ben.py",
+      "from": [
+        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.mid",
+        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.ly"
+      ],
+      "sha256": "74d45f8fc00decda88072d8e0ab4a2c39fa2dd9877dfb3fb62ee955d7b8deb2f"
+    },
+    "score.musicxml": {
+      "script": "pipeline/caro_mio_ben.py",
+      "from": [
+        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.mid",
+        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.ly"
+      ],
+      "sha256": "4514673aa490405b815c136e2404ac94d13489d7cdd2a419eb0df2f07b654702"
+    }
+  },
   "three-blind-mice": {
-    "accompaniment.mid": { "url": "https://www.gutenberg.org/files/25418/25418-h/music/threeblindmice.midi", "sha256": "d6c51908842ea607a4607b850e97e4b8d6a573493270bd7067419f8c5889d557" },
-    "score.musicxml": { "url": "https://www.gutenberg.org/files/25418/25418-h/music/threeblindmice.xml", "sha256": "4182bde140dedb8eb0f3bb9b2fdc7b7bf53d13f6b6a4aa7536fd1a96eec893b9" }
+    "accompaniment.mid": {
+      "url": "https://www.gutenberg.org/files/25418/25418-h/music/threeblindmice.midi",
+      "sha256": "d6c51908842ea607a4607b850e97e4b8d6a573493270bd7067419f8c5889d557"
+    },
+    "score.musicxml": {
+      "url": "https://www.gutenberg.org/files/25418/25418-h/music/threeblindmice.xml",
+      "sha256": "4182bde140dedb8eb0f3bb9b2fdc7b7bf53d13f6b6a4aa7536fd1a96eec893b9"
+    }
   },
   "baa-baa-black-sheep": {
-    "accompaniment.mid": { "url": "https://www.gutenberg.org/files/25418/25418-h/music/baabaa.midi", "sha256": "3600d9c8a79d681706f399d2d86894493e03cac58314a19836f56028b5a30dfd" },
-    "score.musicxml": { "url": "https://www.gutenberg.org/files/25418/25418-h/music/baabaa.xml", "sha256": "8a72985af317de378633f99807ba021c99c23c409d59acc0c0e5888da2266d77" }
+    "accompaniment.mid": {
+      "url": "https://www.gutenberg.org/files/25418/25418-h/music/baabaa.midi",
+      "sha256": "3600d9c8a79d681706f399d2d86894493e03cac58314a19836f56028b5a30dfd"
+    },
+    "score.musicxml": {
+      "url": "https://www.gutenberg.org/files/25418/25418-h/music/baabaa.xml",
+      "sha256": "8a72985af317de378633f99807ba021c99c23c409d59acc0c0e5888da2266d77"
+    }
   },
   "london-bridge": {
-    "accompaniment.mid": { "url": "https://www.gutenberg.org/files/25432/25432-h/music/londonbridge.midi", "sha256": "e1bffb54ff25929d0c29ee2c0d448cf035adc32b358d763e67216d65b938c757" },
-    "score.musicxml": { "url": "https://www.gutenberg.org/files/25432/25432-h/music/londonbridge.xml", "sha256": "a48240154d16f26c0ce5a7ac0fd85c597fb5a9c37729ce3d8a8d03ae38cda0d6" }
+    "accompaniment.mid": {
+      "url": "https://www.gutenberg.org/files/25432/25432-h/music/londonbridge.midi",
+      "sha256": "e1bffb54ff25929d0c29ee2c0d448cf035adc32b358d763e67216d65b938c757"
+    },
+    "score.musicxml": {
+      "url": "https://www.gutenberg.org/files/25432/25432-h/music/londonbridge.xml",
+      "sha256": "a48240154d16f26c0ce5a7ac0fd85c597fb5a9c37729ce3d8a8d03ae38cda0d6"
+    }
   }
 }

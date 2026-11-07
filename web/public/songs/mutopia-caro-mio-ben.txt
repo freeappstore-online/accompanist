@@ -1,0 +1,15 @@
+Caro mio ben (Come once again)
+Attributed to Giuseppe Giordani (1751-1798); some scholars, among them John Glenn Paton,
+credit Tommaso Giordani (c. 1730-1806).
+
+Edition: Mutopia Project, typeset in LilyPond by Peter Chubb (2009) from the
+Boosey and Hawkes 1903 edition, as corrected from other editions.
+https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/
+
+The typesetter placed this sheet music in the public domain:
+http://creativecommons.org/licenses/publicdomain
+
+Accompanist's score.musicxml and accompaniment.mid are derived from the edition's
+LilyPond source and MIDI by pipeline/caro_mio_ben.py: the voice and lyric tracks are
+removed from the MIDI so only the piano plays, and grace notes are left out of the
+on-screen score. These derived files are also dedicated to the public domain.
