@@ -39,6 +39,10 @@ export class Accompanist {
   private position = 0;
   private anchor = { audio: 0, song: 0 };
   private timer?: ReturnType<typeof setInterval>;
+  /** Where playback stops (song seconds), and whether it then jumps back to `loopFrom`. */
+  until = Infinity;
+  loop = false;
+  private loopFrom = 0;
   onUpdate: (time: number, playing: boolean) => void = () => {};
 
   constructor(private clock: () => number, private instrument: Instrument, private click: (when: number, accent: boolean) => void) {}
@@ -62,12 +66,16 @@ export class Accompanist {
     const time = this.time, playing = this.playing;
     this.load(this.song, semitones);
     this.position = time;
-    if (playing) this.start(time, false);
+    if (playing) this.start(time, false, { until: this.until, loop: this.loop });
   }
-  start(from: number, countIn: boolean) {
+  /** Plays from `from` (song seconds) to `until`, looping back to `from` when `loop` is set. */
+  start(from: number, countIn: boolean, range: { until?: number; loop?: boolean } = {}) {
     if (!this.song) return;
     this.halt();
     from = Math.max(0, Math.min(from, this.song.duration));
+    this.until = range.until && range.until > from ? range.until : Infinity;
+    this.loop = !!range.loop && this.until < Infinity;
+    this.loopFrom = from;
     this.instrument.session();
     let audio = this.clock() + START_DELAY;
     if (countIn) {
@@ -103,16 +111,19 @@ export class Accompanist {
     if (!this.playing || !this.song) return;
     const now = this.clock();
     const horizon = this.anchor.song + Math.max(0, now + LOOKAHEAD - this.anchor.audio) * this.speed;
-    while (this.index < this.events.length && this.events[this.index].time < horizon) {
+    const limit = Math.min(horizon, this.until);
+    while (this.index < this.events.length && this.events[this.index].time < limit) {
       const event = this.events[this.index++];
       const when = Math.max(now, this.anchor.audio + (event.time - this.anchor.song) / this.speed);
       if (event.on) this.instrument.noteOn(event.midi, event.velocity, when);
       else this.instrument.noteOff(event.midi, when);
     }
-    const time = this.time;
-    if (time >= this.song.duration) {
+    const time = this.time, end = Math.min(this.until, this.song.duration);
+    if (time >= end) {
+      if (this.loop) { this.start(this.loopFrom, false, { until: this.until, loop: true }); return; }
       this.halt();
-      this.position = this.song.duration;
+      this.instrument.silence();
+      this.position = end;
       this.onUpdate(this.position, false);
       return;
     }

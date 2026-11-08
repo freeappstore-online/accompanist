@@ -1,20 +1,14 @@
 {
   "caro-mio-ben": {
     "accompaniment.mid": {
-      "script": "pipeline/caro_mio_ben.py",
-      "from": [
-        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.mid",
-        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.ly"
-      ],
-      "sha256": "74d45f8fc00decda88072d8e0ab4a2c39fa2dd9877dfb3fb62ee955d7b8deb2f"
+      "from": "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.ly",
+      "script": "pipeline/build.py",
+      "sha256": "f4483125fb46957a6829ac6708ba8af49bf6052215058e1f51c67731a4ac96c0"
     },
     "score.musicxml": {
-      "script": "pipeline/caro_mio_ben.py",
-      "from": [
-        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.mid",
-        "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.ly"
-      ],
-      "sha256": "4514673aa490405b815c136e2404ac94d13489d7cdd2a419eb0df2f07b654702"
+      "from": "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/caromioben.ly",
+      "script": "pipeline/build.py",
+      "sha256": "d2b01d68cfb4a4a38b705ec6abfc818284ebaba3b9916a4e6c2983b1aa579558"
     }
   },
   "three-blind-mice": {
@@ -45,6 +39,126 @@
     "score.musicxml": {
       "url": "https://www.gutenberg.org/files/25432/25432-h/music/londonbridge.xml",
       "sha256": "a48240154d16f26c0ce5a7ac0fd85c597fb5a9c37729ce3d8a8d03ae38cda0d6"
+    }
+  },
+  "heidenroeslein": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D257/SchubertF-D257-Heidenroeslein/SchubertF-D257-Heidenroeslein.ly",
+      "script": "pipeline/build.py",
+      "sha256": "db57c7b1e9f35494f69f9f6dfe73368ffe7e2ef99fb202bac5409e1a528e65ab"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D257/SchubertF-D257-Heidenroeslein/SchubertF-D257-Heidenroeslein.ly",
+      "script": "pipeline/build.py",
+      "sha256": "8e3951b08f8e5e3f913f143fbd60c0e9b5bac6cf9c170fc088244009a32d0bc4"
+    }
+  },
+  "vaccai-lesson-1": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/VaccaiN/LessonI/LessonI.ly",
+      "script": "pipeline/build.py",
+      "sha256": "8eb616b7f84d40dfdda7a304b749d26e0946b958e81bd0d8bdd02a204bd0ad3a"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/VaccaiN/LessonI/LessonI.ly",
+      "script": "pipeline/build.py",
+      "sha256": "ab634fec32b5b2a2b26c21002408b479c9217aa90183647c06033282ddb19f1a"
+    }
+  },
+  "an-die-musik": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D547/AnDieMusik/AnDieMusik.ly",
+      "script": "pipeline/build.py",
+      "sha256": "73419e23cef1f35e964a66ebb5776e814b6febe2515d720ed13a7a86da67a8e1"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D547/AnDieMusik/AnDieMusik.ly",
+      "script": "pipeline/build.py",
+      "sha256": "4e162d103cfba60a449e6a8e3f4a41fbbbaf123e324b840d22674c4652bb5f48"
+    }
+  },
+  "du-bist-die-ruh": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D776/SchubertF-D776_DuBistDieRuh/SchubertF-D776_DuBistDieRuh.ly",
+      "script": "pipeline/build.py",
+      "sha256": "a0234c1a40b8a347d1943d095078b8e36ef68ea6822cb04c0586f226c5c5ff3d"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D776/SchubertF-D776_DuBistDieRuh/SchubertF-D776_DuBistDieRuh.ly",
+      "script": "pipeline/build.py",
+      "sha256": "a10e8aa1f0698ee3e6dd8805eaf1ef9b62aa332eb8e9fbdbbad16bb3d5df4a38"
+    }
+  },
+  "an-sylvia": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D891/AnSylvia/AnSylvia.ly",
+      "script": "pipeline/build.py",
+      "sha256": "a42d69681af154d55dd4054bde6d1f8988e809951703570f5c7938ea6ee0465a"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D891/AnSylvia/AnSylvia.ly",
+      "script": "pipeline/build.py",
+      "sha256": "0dbc1a85c408c44e062dc0232f5241d4238d480c5b02446610dfcf2b07f66d2b"
+    }
+  },
+  "ave-maria": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D839/SchubertF-D839_AveMaria/SchubertF-D839_AveMaria.ly",
+      "script": "pipeline/build.py",
+      "sha256": "18f0d9cce22617f279ade0180a31c3aa4752dc1fdc09ed6686cf5e4099612409"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D839/SchubertF-D839_AveMaria/SchubertF-D839_AveMaria.ly",
+      "script": "pipeline/build.py",
+      "sha256": "49c9f34f708973d3b01b7c2432c1b56a67961e0dbf73d0c95abe49d8b07d2540"
+    }
+  },
+  "fruehlingsglaube": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D686B/SchubertF-D686B-Fruehlingsglaube/SchubertF-D686B-Fruehlingsglaube.ly",
+      "script": "pipeline/build.py",
+      "sha256": "a4f565808c0cd782510225cd3e46ad069ab948bcc24f95a6d5228f0926848158"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D686B/SchubertF-D686B-Fruehlingsglaube/SchubertF-D686B-Fruehlingsglaube.ly",
+      "script": "pipeline/build.py",
+      "sha256": "39fa2e2f542a816728772690e02b57147b6c69a00ee7bb9ffa9316b54ede158c"
+    }
+  },
+  "nacht-und-traeume": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D827/SchubertF-D827_NachtUndTraeume/SchubertF-D827_NachtUndTraeume.ly",
+      "script": "pipeline/build.py",
+      "sha256": "1be950e932164231937fcf519eedbbf4611258faebc81e72ede208b55f587155"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchubertF/D827/SchubertF-D827_NachtUndTraeume/SchubertF-D827_NachtUndTraeume.ly",
+      "script": "pipeline/build.py",
+      "sha256": "2ca1d482705104c1dc865481cd6b7f1d973865cfb73bcd07d1243b687d42d949"
+    }
+  },
+  "widmung": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/SchumannR/O25/schumann-widmung/schumann-widmung.ly",
+      "script": "pipeline/build.py",
+      "sha256": "5aa6c0dde9fd9b2ade4fdbfb61cbf1cc1b0b7df3fd128a9bbf35ce3e375c43eb"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/SchumannR/O25/schumann-widmung/schumann-widmung.ly",
+      "script": "pipeline/build.py",
+      "sha256": "9fe6ddf3d1f3f7e59b319156722dc1cadacb45d70b03b341565b26e467496906"
+    }
+  },
+  "apres-un-reve": {
+    "accompaniment.mid": {
+      "from": "https://www.mutopiaproject.org/ftp/FaureG/O7/apres/apres.ly",
+      "script": "pipeline/build.py",
+      "sha256": "13f44059d0de26b9b45b77cb09e54882a19b974198d5f2e467beaec8243cec0b"
+    },
+    "score.musicxml": {
+      "from": "https://www.mutopiaproject.org/ftp/FaureG/O7/apres/apres.ly",
+      "script": "pipeline/build.py",
+      "sha256": "0ab92ced7354de9c987b5fb8d6d4bec912d3bc70d3c20a693f02b2b22eace8ec"
     }
   }
 }

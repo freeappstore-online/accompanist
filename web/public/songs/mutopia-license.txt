@@ -1,0 +1,15 @@
+Art songs in Accompanist come from the Mutopia Project (https://www.mutopiaproject.org),
+whose volunteers typeset public-domain editions in LilyPond. Each song's source file is
+listed in web/songs-provenance.json in the app's repository, with its typesetter and the
+printed edition it was taken from shown in the app's About page.
+
+Only editions the typesetter placed in the public domain are used:
+http://creativecommons.org/licenses/publicdomain
+
+Accompanist's score.musicxml and accompaniment.mid for each song are derived from the
+LilyPond source by pipeline/build.py: LilyPond reads the source, the voice part is left out
+of the playback so only the piano plays, and grace notes are left out of score and playback.
+These derived files are also dedicated to the public domain.
+
+Caro mio ben is attributed to Giuseppe Giordani (1751-1798); some scholars, among them
+John Glenn Paton, credit Tommaso Giordani (c. 1730-1806).

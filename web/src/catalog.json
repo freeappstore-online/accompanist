@@ -1,0 +1,441 @@
+[
+  {
+    "id": "caro-mio-ben",
+    "title": "Caro mio ben",
+    "composer": "Attributed to Giuseppe Giordani (some sources: Tommaso Giordani)",
+    "poet": "",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/",
+    "rights": "Public domain",
+    "edition": "Typeset by Peter Chubb from Boosey and Hawkes 1903, as corrected from other editions.",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Caro mio ben",
+        "bar": 4
+      },
+      {
+        "name": "Caro mio ben (2)",
+        "bar": 9
+      },
+      {
+        "name": "Il tuo fedel",
+        "bar": 14
+      },
+      {
+        "name": "Tanto rigor tanto",
+        "bar": 19
+      },
+      {
+        "name": "Credimi almen",
+        "bar": 26
+      },
+      {
+        "name": "Languisce il cor",
+        "bar": 29
+      }
+    ]
+  },
+  {
+    "id": "vaccai-lesson-1",
+    "title": "Vaccai Lesson I: the scale",
+    "composer": "Nicola Vaccai",
+    "poet": "Pietro Metastasio",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/VaccaiN/LessonI/",
+    "rights": "Public domain",
+    "edition": "Typeset by Anonymous from Practical Vocal Method for Alto, Baritone / New York: G. Schirmer, 1894. (IMSLP38823-PMLP85474).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Manca sollecita",
+        "bar": 1
+      },
+      {
+        "name": "Più dell'usato",
+        "bar": 3
+      },
+      {
+        "name": "Ancorchè s'agiti",
+        "bar": 5
+      },
+      {
+        "name": "Conlieve fiato",
+        "bar": 7
+      },
+      {
+        "name": "Face che palpita",
+        "bar": 9
+      },
+      {
+        "name": "Face che palpita (2)",
+        "bar": 13
+      }
+    ]
+  },
+  {
+    "id": "an-die-musik",
+    "title": "An die Musik",
+    "composer": "Franz Schubert",
+    "poet": "Franz von Schober",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D547/AnDieMusik/",
+    "rights": "Public domain",
+    "edition": "Typeset by Ph. Raynaud from C.F. Peters (Band I).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Du holde Kunst",
+        "bar": 3
+      },
+      {
+        "name": "Wo mich des",
+        "bar": 7
+      },
+      {
+        "name": "Hast du mein",
+        "bar": 11
+      },
+      {
+        "name": "Hast mich in",
+        "bar": 14
+      },
+      {
+        "name": "In eine beßre",
+        "bar": 17
+      }
+    ]
+  },
+  {
+    "id": "heidenroeslein",
+    "title": "Heidenröslein",
+    "composer": "Franz Schubert",
+    "poet": "Johann Wolfgang von Goethe",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D257/SchubertF-D257-Heidenroeslein/",
+    "rights": "Public domain",
+    "edition": "Typeset by Ph. Raynaud from Breitkopf & Härtel (1884-1897).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Sah ein Knab’",
+        "bar": 1
+      },
+      {
+        "name": "War so jung",
+        "bar": 5
+      }
+    ]
+  },
+  {
+    "id": "du-bist-die-ruh",
+    "title": "Du bist die Ruh",
+    "composer": "Franz Schubert",
+    "poet": "Friedrich Rückert",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D776/SchubertF-D776_DuBistDieRuh/",
+    "rights": "Public domain",
+    "edition": "Typeset by Ph. Raynaud from C.F. Peters (Band I).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Du bist die",
+        "bar": 8
+      },
+      {
+        "name": "Kehr' ein bei",
+        "bar": 31
+      },
+      {
+        "name": "Dies Augenzelt Von",
+        "bar": 54
+      },
+      {
+        "name": "O füll' es",
+        "bar": 62
+      },
+      {
+        "name": "Dies Augenzelt Von (2)",
+        "bar": 68
+      },
+      {
+        "name": "O füll' es (2)",
+        "bar": 76
+      }
+    ]
+  },
+  {
+    "id": "an-sylvia",
+    "title": "An Sylvia (Who is Sylvia?)",
+    "composer": "Franz Schubert",
+    "poet": "William Shakespeare, translated by Eduard von Bauernfeld",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D891/AnSylvia/",
+    "rights": "Public domain",
+    "edition": "Typeset by Peter Chubb from Unknown.",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Who is Syl",
+        "bar": 5
+      },
+      {
+        "name": "That all our",
+        "bar": 8
+      },
+      {
+        "name": "Ho ly fair",
+        "bar": 12
+      },
+      {
+        "name": "The heav'ns such",
+        "bar": 15
+      },
+      {
+        "name": "That a do",
+        "bar": 19
+      },
+      {
+        "name": "That a do (2)",
+        "bar": 22
+      }
+    ]
+  },
+  {
+    "id": "ave-maria",
+    "title": "Ave Maria (Ellens dritter Gesang)",
+    "composer": "Franz Schubert",
+    "poet": "Walter Scott, translated by Adam Storck",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D839/SchubertF-D839_AveMaria/",
+    "rights": "Public domain",
+    "edition": "Typeset by Ph. Raynaud from C.F. Peters (Band I).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Ave Maria",
+        "bar": 3
+      },
+      {
+        "name": "Erhöre einer Jungfrau",
+        "bar": 5
+      },
+      {
+        "name": "Wir schlafen sicher",
+        "bar": 8
+      },
+      {
+        "name": "O Jungfrau sieh",
+        "bar": 10
+      },
+      {
+        "name": "Ave Maria (2)",
+        "bar": 13
+      },
+      {
+        "name": "Ave Maria (3)",
+        "bar": 16
+      },
+      {
+        "name": "Wenn wir auf",
+        "bar": 18
+      },
+      {
+        "name": "Du lächelst Rosendüfte",
+        "bar": 21
+      },
+      {
+        "name": "O Mutter höre",
+        "bar": 23
+      },
+      {
+        "name": "Ave Maria (4)",
+        "bar": 26
+      },
+      {
+        "name": "Ave Maria (5)",
+        "bar": 29
+      },
+      {
+        "name": "Der Erde und",
+        "bar": 31
+      },
+      {
+        "name": "Wir woll'n uns",
+        "bar": 34
+      },
+      {
+        "name": "Der Jungfrau wolle",
+        "bar": 36
+      },
+      {
+        "name": "Ave Maria (6)",
+        "bar": 39
+      }
+    ]
+  },
+  {
+    "id": "fruehlingsglaube",
+    "title": "Frühlingsglaube",
+    "composer": "Franz Schubert",
+    "poet": "Ludwig Uhland",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D686B/SchubertF-D686B-Fruehlingsglaube/",
+    "rights": "Public domain",
+    "edition": "Typeset by Ph. Raynaud from Breitkopf & Härtel (1884-1897).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Die linden Lüfte",
+        "bar": 5
+      },
+      {
+        "name": "O frischer Duft",
+        "bar": 13
+      },
+      {
+        "name": "O neuer Klang",
+        "bar": 16
+      },
+      {
+        "name": "Nun muss sich",
+        "bar": 22
+      },
+      {
+        "name": "Die Welt wird",
+        "bar": 28
+      },
+      {
+        "name": "Es blüht das",
+        "bar": 36
+      },
+      {
+        "name": "Es blüht das (2)",
+        "bar": 39
+      },
+      {
+        "name": "Nun muss sich (2)",
+        "bar": 45
+      }
+    ]
+  },
+  {
+    "id": "nacht-und-traeume",
+    "title": "Nacht und Träume",
+    "composer": "Franz Schubert",
+    "poet": "Matthäus von Collin",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchubertF/D827/SchubertF-D827_NachtUndTraeume/",
+    "rights": "Public domain",
+    "edition": "Typeset by Ph. Raynaud from C.F. Peters (Band I).",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Heil’ge Nacht du",
+        "bar": 5
+      },
+      {
+        "name": "Nieder wallen auch",
+        "bar": 8
+      },
+      {
+        "name": "Wie dein Mondlicht",
+        "bar": 10
+      },
+      {
+        "name": "Durch der Menschen",
+        "bar": 12
+      },
+      {
+        "name": "Die belauschen sie",
+        "bar": 15
+      },
+      {
+        "name": "Die belauschen sie (2)",
+        "bar": 17
+      },
+      {
+        "name": "Rufen wenn der",
+        "bar": 20
+      },
+      {
+        "name": "Holde Träume kehret",
+        "bar": 22
+      },
+      {
+        "name": "Holde Träume kehret (2)",
+        "bar": 25
+      }
+    ]
+  },
+  {
+    "id": "widmung",
+    "title": "Widmung",
+    "composer": "Robert Schumann",
+    "poet": "Friedrich Rückert",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/SchumannR/O25/schumann-widmung/",
+    "rights": "Public domain",
+    "edition": "Typeset by Daniel Johnson from The University Society, 1909.",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Du meine Seele",
+        "bar": 2
+      },
+      {
+        "name": "Du meine Welt",
+        "bar": 5
+      },
+      {
+        "name": "In das hinab",
+        "bar": 10
+      },
+      {
+        "name": "Du bist die",
+        "bar": 14
+      },
+      {
+        "name": "Du bist vom",
+        "bar": 18
+      },
+      {
+        "name": "Daß du mich",
+        "bar": 21
+      },
+      {
+        "name": "Mein guter Geist",
+        "bar": 27
+      },
+      {
+        "name": "Du meine Seele (2)",
+        "bar": 30
+      },
+      {
+        "name": "Du meine Welt (2)",
+        "bar": 33
+      }
+    ]
+  },
+  {
+    "id": "apres-un-reve",
+    "title": "Après un rêve",
+    "composer": "Gabriel Fauré",
+    "poet": "Romain Bussine",
+    "source": "Mutopia Project",
+    "sourceUrl": "https://www.mutopiaproject.org/ftp/FaureG/O7/apres/",
+    "rights": "Public domain",
+    "edition": "Typeset by Tak-Shing Chan from Choudens, 1880.",
+    "license": "/songs/mutopia-license.txt",
+    "phrases": [
+      {
+        "name": "Dans un sommeil",
+        "bar": 2
+      },
+      {
+        "name": "Tu m'appelais et",
+        "bar": 17
+      }
+    ]
+  }
+]

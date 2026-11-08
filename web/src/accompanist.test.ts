@@ -67,3 +67,24 @@ it('stops, silences and resumes from where it stopped; ends at the song duration
   expect(a.time).toBe(4);
   expect(updates.at(-1)).toBe(false);
 });
+
+it('stops at the end of a range without queuing notes past it', () => {
+  const a = make();
+  a.start(1, false, { until: 3 });
+  for (now = 10; now < 12.2; now += .025) a.tick();
+  expect(a.playing).toBe(false);
+  expect(a.time).toBe(3);
+  expect(log.filter(l => l.startsWith('on'))).toEqual(['on 61 @10.05', 'on 62 @11.05']);
+  expect(log.at(-1)).toBe('silence');
+});
+
+it('loops a range back to its start', () => {
+  const a = make();
+  a.start(1, false, { until: 2, loop: true });
+  for (now = 10; now < 12.2; now += .025) a.tick();
+  expect(a.playing).toBe(true);
+  expect(log.filter(l => l.startsWith('on')).length).toBeGreaterThanOrEqual(2);
+  expect(log.filter(l => l === 'session').length).toBeGreaterThanOrEqual(2);
+  expect(a.time).toBeGreaterThanOrEqual(1);
+  expect(a.time).toBeLessThan(2);
+});

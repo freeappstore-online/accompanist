@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -7,6 +7,9 @@ import provenance from '../songs-provenance.json';
 import { beatAtTime, parseMidi } from './music';
 import { readMusicXml } from './original-score';
 import { findBar, SONGS } from './songs';
+
+// Large scores (Ave Maria's arpeggios) take a few seconds to parse in happy-dom.
+vi.setConfig({ testTimeout: 30_000 });
 
 it.each(SONGS.map(s => [s.id]))('%s: pinned assets, playable MIDI and a bar map that matches it', id => {
   const files = provenance[id as keyof typeof provenance];
@@ -23,7 +26,9 @@ it.each(SONGS.map(s => [s.id]))('%s: pinned assets, playable MIDI and a bar map 
   expect(end).toBeLessThanOrEqual(measures.at(-1)!.end + 1e-6);
 });
 
-it('caro-mio-ben plays the piano only; the singer has the tune', () => {
-  const song = parseMidi(Uint8Array.from(readFileSync(resolve('public/songs/caro-mio-ben/accompaniment.mid'))).buffer, 'caro');
-  expect(song.tracks.map(t => t.name).filter(n => n)).toEqual(['pianoRH', 'pianoLH']);
+it.each(SONGS.filter(s => s.phrases).map(s => [s.id]))('%s plays the piano only, and its start points are real bars', id => {
+  const song = parseMidi(Uint8Array.from(readFileSync(resolve(`public/songs/${id}/accompaniment.mid`))).buffer, id);
+  expect(song.tracks.filter(t => song.notes.some(n => song.tracks[n.track] === t))).toHaveLength(2);
+  const { measures } = readMusicXml(readFileSync(resolve(`public/songs/${id}/score.musicxml`), 'utf8'));
+  for (const point of SONGS.find(s => s.id === id)!.phrases!) expect(findBar(measures, point.bar), point.name).toBeGreaterThanOrEqual(0);
 });

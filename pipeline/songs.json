@@ -1,0 +1,89 @@
+[
+  {
+    "id": "caro-mio-ben",
+    "path": "GiordanoG/caromioben/caromioben.ly",
+    "title": "Caro mio ben",
+    "composer": "Attributed to Giuseppe Giordani (some sources: Tommaso Giordani)",
+    "sha256": "c55c9c9951e906158abd8b7bb4e6488201fd94c47438bf0beb52eaf3911009b8"
+  },
+  {
+    "id": "vaccai-lesson-1",
+    "path": "VaccaiN/LessonI/LessonI.ly",
+    "title": "Vaccai Lesson I: the scale",
+    "composer": "Nicola Vaccai",
+    "poet": "Pietro Metastasio",
+    "sha256": "8ba0c5acde9f79b8ff59ebb4827718961e7e8c582c4f6c4e47aaea5a845d2ebf"
+  },
+  {
+    "id": "an-die-musik",
+    "path": "SchubertF/D547/AnDieMusik/AnDieMusik.ly",
+    "title": "An die Musik",
+    "composer": "Franz Schubert",
+    "poet": "Franz von Schober",
+    "sha256": "5f9be2297f6b95cbf810aa476adf64eac99a39db2ade355efe32a861996ce8ef"
+  },
+  {
+    "id": "heidenroeslein",
+    "path": "SchubertF/D257/SchubertF-D257-Heidenroeslein/SchubertF-D257-Heidenroeslein.ly",
+    "title": "Heidenröslein",
+    "composer": "Franz Schubert",
+    "poet": "Johann Wolfgang von Goethe",
+    "sha256": "c8117d546d81d9c6205ac3180c9aa321a0004f23cf0cdbd460b4f86d13a05cf5"
+  },
+  {
+    "id": "du-bist-die-ruh",
+    "path": "SchubertF/D776/SchubertF-D776_DuBistDieRuh/SchubertF-D776_DuBistDieRuh.ly",
+    "title": "Du bist die Ruh",
+    "composer": "Franz Schubert",
+    "poet": "Friedrich Rückert",
+    "sha256": "362c4c7d9830532a0b16d72bba3c33433dbc00d1406c691820a756fd6c4f2e22"
+  },
+  {
+    "id": "an-sylvia",
+    "path": "SchubertF/D891/AnSylvia/AnSylvia.ly",
+    "title": "An Sylvia (Who is Sylvia?)",
+    "composer": "Franz Schubert",
+    "poet": "William Shakespeare, translated by Eduard von Bauernfeld",
+    "sha256": "80f55c412c32b0622c55f4dca40da02a0ddaf03c4ccb73ecf5fc50d1dec8c66e"
+  },
+  {
+    "id": "ave-maria",
+    "path": "SchubertF/D839/SchubertF-D839_AveMaria/SchubertF-D839_AveMaria.ly",
+    "title": "Ave Maria (Ellens dritter Gesang)",
+    "composer": "Franz Schubert",
+    "poet": "Walter Scott, translated by Adam Storck",
+    "sha256": "9613b077f9fd0e34a0fe4ce5e3aa065b471fd3d091794c007eb3b9ced144f521"
+  },
+  {
+    "id": "fruehlingsglaube",
+    "path": "SchubertF/D686B/SchubertF-D686B-Fruehlingsglaube/SchubertF-D686B-Fruehlingsglaube.ly",
+    "title": "Frühlingsglaube",
+    "composer": "Franz Schubert",
+    "poet": "Ludwig Uhland",
+    "sha256": "e1cc02e2bbfc1a670fc18b53af5fb7f2853d019586b94789eea6c1ce4e87917b"
+  },
+  {
+    "id": "nacht-und-traeume",
+    "path": "SchubertF/D827/SchubertF-D827_NachtUndTraeume/SchubertF-D827_NachtUndTraeume.ly",
+    "title": "Nacht und Träume",
+    "composer": "Franz Schubert",
+    "poet": "Matthäus von Collin",
+    "sha256": "20540eafb1e33e3de38ed97a74651351e18d9d253b1be5fb469445f332d178b4"
+  },
+  {
+    "id": "widmung",
+    "path": "SchumannR/O25/schumann-widmung/schumann-widmung.ly",
+    "title": "Widmung",
+    "composer": "Robert Schumann",
+    "poet": "Friedrich Rückert",
+    "sha256": "f4efdcde04adad3c703c3ef992ac995af3f78a79c153894a8eff62a3f58ef766"
+  },
+  {
+    "id": "apres-un-reve",
+    "path": "FaureG/O7/apres/apres.ly",
+    "title": "Après un rêve",
+    "composer": "Gabriel Fauré",
+    "poet": "Romain Bussine",
+    "sha256": "510afe06c47b2464f6623b16e8e11e4f0db1511fc218352ef25a1cfb43affb2d"
+  }
+]

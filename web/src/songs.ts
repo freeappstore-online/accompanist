@@ -1,18 +1,22 @@
 import { parseMidi, type Song } from './music';
 import { readMusicXml } from './original-score';
+import catalog from './catalog.json';
 
-export type SongInfo = { id: string; title: string; composer: string; source: string; sourceUrl: string; rights: string; edition: string; license: string };
+/** A named start point: a bar, and for a singer's own points an optional last bar. */
+export type Point = { name: string; bar: number; end?: number };
+export type SongInfo = { id: string; title: string; composer: string; poet?: string; source: string; sourceUrl: string; rights: string; edition: string; license: string; phrases?: Point[] };
 export type Measure = ReturnType<typeof readMusicXml>['measures'][number];
 export type LoadedSong = { info: SongInfo; song: Song; xml: string; measures: Measure[] };
 
 const OPERA = { source: 'Project Gutenberg · The Baby’s Opera', sourceUrl: 'https://www.gutenberg.org/ebooks/25418', rights: 'Public domain historic source',
   edition: 'The Baby’s Opera, illustrated by Walter Crane (1845–1915), published by Frederick Warne and Co.; music transcribed by Linda Cantoni.', license: '/songs/gutenberg-opera-license.txt' };
 
-/** Static per-song assets live in /songs/<id>/ and load on demand; see README for provenance. */
+/**
+ * Static per-song assets live in /songs/<id>/ and load on demand; see README for provenance.
+ * The art songs are built by pipeline/build.py (catalog.json); the nursery songs include their melody.
+ */
 export const SONGS: SongInfo[] = [
-  { id: 'caro-mio-ben', title: 'Caro mio ben', composer: 'Attributed to Giuseppe Giordani (some sources: Tommaso Giordani)', source: 'Mutopia Project',
-    sourceUrl: 'https://www.mutopiaproject.org/ftp/GiordanoG/caromioben/', rights: 'Public domain', edition: 'Typeset by Peter Chubb from the Boosey and Hawkes 1903 edition; the piano part plays and the voice is yours.',
-    license: '/songs/mutopia-caro-mio-ben.txt' },
+  ...catalog,
   { id: 'three-blind-mice', title: 'Three Blind Mice', composer: 'Traditional', ...OPERA },
   { id: 'baa-baa-black-sheep', title: 'Baa, Baa, Black Sheep', composer: 'Traditional', ...OPERA },
   { id: 'london-bridge', title: 'London Bridge', composer: 'Traditional · arranged by Lucy Crane', source: 'Project Gutenberg · The Baby’s Bouquet', sourceUrl: 'https://www.gutenberg.org/ebooks/25432',
