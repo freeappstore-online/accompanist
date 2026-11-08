@@ -15,7 +15,8 @@ import { SOUND_BANK } from "./sound-cache";
 export const fas = initApp({ appId: "accompanist" });
 
 const NAV: NavItem[] = [
-  { label: "Accompanist", href: "/", title: "Accompanist" },
+  { label: "Practice", href: "/", title: "Accompanist" },
+  { label: "Songs", href: "/songs", title: "Songs — Accompanist" },
   { label: "About", href: "/about", title: "About — Accompanist" },
 ];
 
@@ -42,7 +43,8 @@ export default function App() {
   return (
     <Shell app={fas} appName="Accompanist" nav={NAV} onNavigate={navigate}>
       <div className="mx-auto w-full max-w-4xl p-4 sm:p-8">
-        {path === "/about" ? <About /> : <Home songId={songId} setSongId={setSongId} />}
+        {path === "/about" ? <About /> : path === "/songs" ? <Songs songId={songId} choose={id => { setSongId(id); navigate("/"); }} />
+          : <Home songId={songId} onSongs={() => navigate("/songs")} />}
       </div>
     </Shell>
   );
@@ -50,7 +52,7 @@ export default function App() {
 
 type Audio = Awaited<ReturnType<typeof createAudio>>;
 
-function Home({ songId, setSongId }: { songId: string; setSongId: (id: string) => void }) {
+function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   const [loaded, setLoaded] = useState<LoadedSong | null>(null);
   const [loadError, setLoadError] = useState("");
   const [retry, setRetry] = useState(0);
@@ -62,6 +64,7 @@ function Home({ songId, setSongId }: { songId: string; setSongId: (id: string) =
   const [listening, setListening] = useState(false), [voiceStatus, setVoiceStatus] = useState("");
   const [fromInput, setFromInput] = useState("1"), [toInput, setToInput] = useState(""), [loop, setLoop] = useState(false), [barError, setBarError] = useState("");
   const [active, setActive] = useState<{ first: number; last?: number } | null>(null);
+  const [tab, setTab] = useState<"Start points" | "Bars" | "Add point" | "Voice">("Start points");
   const [ownPoints, setOwnPoints] = useState<Point[]>(() => loadOwnPoints(songId));
   const [pointName, setPointName] = useState(""), [pointBar, setPointBar] = useState(""), [pointEnd, setPointEnd] = useState(""), [pointError, setPointError] = useState("");
   const phrases = SONGS.find(s => s.id === songId)?.phrases ?? [];
@@ -209,7 +212,6 @@ function Home({ songId, setSongId }: { songId: string; setSongId: (id: string) =
   };
 
   const bounds = loaded ? transposeBounds(loaded.song) : { min: 0, max: 0 };
-  const keys = Array.from({ length: Math.min(6, bounds.max) - Math.max(-6, bounds.min) + 1 }, (_, i) => Math.max(-6, bounds.min) + i);
   const wholeNumber = (value: string) => /^\s*\d+\s*$/.test(value) ? Number(value) : null;
   const submitRange = () => {
     const from = wholeNumber(fromInput), to = toInput.trim() ? wholeNumber(toInput) : undefined;
@@ -228,69 +230,77 @@ function Home({ songId, setSongId }: { songId: string; setSongId: (id: string) =
     setPointName(""); setPointBar(""); setPointEnd("");
   };
 
+  const info = SONGS.find(s => s.id === songId)!;
+  const keyText = transpose === 0 ? "0" : `${transpose > 0 ? "+" : "−"}${Math.abs(transpose)}`;
+  const toggleLoop = () => {
+    const next = !loop; setLoop(next);
+    const player = audio.current?.player;
+    if (player?.playing) {
+      if (next && player.until === Infinity && loaded) player.until = loaded.song.duration;
+      player.loop = next;
+    }
+  };
+  const message = barError || audioError || voiceStatus;
+
   return (
     <>
-      <PageHeader title="Accompanist" description="Your piano accompanist. Choose a song, then say “from bar 5”, “from bar 5 to 12”, “loop” or “stop”." />
-      <div className="space-y-5">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Song">
-          {SONGS.map(s => <Button key={s.id} aria-pressed={s.id === songId} onClick={() => setSongId(s.id)}>{s.title}</Button>)}
-        </div>
-
-        <Card>
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button primary className="min-w-28" disabled={!loaded || audioState === "loading"} onClick={() => playing ? stop() : play()}>
-                {audioState === "loading" ? "Loading piano…" : playing ? "■ Stop" : "▶ Play"}
-              </Button>
-              <Button disabled={!loaded} onClick={() => playBar(0)}>⟲ From the beginning</Button>
-              <span className="ml-auto text-sm tabular-nums text-muted" aria-label="Position">{formatTime(time)} / {formatTime(loaded?.song.duration ?? 0)}</span>
-            </div>
-            <form className="flex flex-wrap items-center gap-2" onSubmit={e => { e.preventDefault(); submitRange(); }}>
-              <label htmlFor="from" className="text-sm">From bar</label>
-              <input id="from" inputMode="numeric" className={`${control} w-20`} value={fromInput} aria-invalid={!!barError} aria-describedby={barError ? "bar-error" : undefined} onChange={e => { setFromInput(e.target.value); setBarError(""); }} />
-              <label htmlFor="to" className="text-sm">to bar</label>
-              <input id="to" inputMode="numeric" placeholder="end" className={`${control} w-20`} value={toInput} aria-invalid={!!barError} aria-describedby={barError ? "bar-error" : undefined} onChange={e => { setToInput(e.target.value); setBarError(""); }} />
-              <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={loop} onChange={e => { setLoop(e.target.checked); const player = audio.current?.player; if (player) player.loop = e.target.checked && player.until < Infinity; }} />Loop</label>
-              <Button type="submit" disabled={!loaded}>Play bars</Button>
-              {active && loaded && <span className="text-sm text-muted">{describe(active.first, active.last)}</span>}
-            </form>
-            <div className="flex flex-wrap items-center gap-3 border-t border-line pt-4">
-              <Button aria-pressed={listening} disabled={!voiceSupported} onClick={toggleVoice}>{listening ? "🎙 Listening — tap to stop" : "🎙 Voice commands"}</Button>
-              <p role="status" aria-live="polite" className="text-sm text-muted">
-                {!voiceSupported ? "Voice commands need a browser with speech recognition, such as Chrome, Edge or Safari." : voiceStatus || "Say “from bar 9”, “from bar 5 to 12”, “from” and a start point’s name, “stop at bar 20”, “loop”, “mark this as verse two”, “play”, “stop”, “slower” or “faster”. Headphones keep the piano out of the microphone."}
-              </p>
-            </div>
-            {barError && <p id="bar-error" role="alert" className="text-sm text-danger">{barError}</p>}
-            {audioError && <p role="alert" className="text-sm text-danger">{audioError} <button className="underline" onClick={() => void ensureAudio().catch(() => {})}>Try again</button></p>}
-          </div>
-        </Card>
+      <PageHeader title={info.title} description={`${info.composer}${info.poet ? ` · words by ${info.poet}` : ""}`} />
+      <div className="space-y-4">
+        <a className="inline-block text-sm text-accent underline" href="/songs" onClick={e => { e.preventDefault(); onSongs(); }}>Change song</a>
 
         {loaded && (
           <Card>
             <div className="space-y-3">
-              <h2 className="text-base font-semibold">Start points</h2>
-              <p className="text-sm text-muted">Tap one, or say “from” and its name. Phrases are named by their first words; add your own below.</p>
-              <ul className="flex flex-wrap gap-2" aria-label="Start points">
-                {points.map(p => {
-                  const own = ownPoints.includes(p);
-                  return (
-                    <li key={`${own}-${p.name}`} className="flex items-center">
-                      <Button className={own ? "rounded-r-none" : ""} onClick={() => setBarError(playRef({ name: p.name }) ?? "")}>{p.name} <span className="font-normal text-muted">· bar {p.bar}{p.end !== undefined ? `–${p.end}` : ""}</span></Button>
-                      {own && <Button className="rounded-l-none border-l-0 px-3" aria-label={`Remove ${p.name}`} onClick={() => removePoint(p.name)}>×</Button>}
-                    </li>
-                  );
-                })}
-              </ul>
-              <form className="flex flex-wrap items-end gap-2 border-t border-line pt-3" onSubmit={e => { e.preventDefault(); submitPoint(); }}>
-                <div className="flex flex-col gap-1"><label htmlFor="point-name" className="text-sm">Point name</label>
-                  <input id="point-name" className={`${control} w-44`} value={pointName} placeholder="second verse" aria-invalid={!!pointError} aria-describedby={pointError ? "point-error" : undefined} onChange={e => { setPointName(e.target.value); setPointError(""); }} /></div>
-                <div className="flex flex-col gap-1"><label htmlFor="point-bar" className="text-sm">Starts at bar</label>
-                  <input id="point-bar" inputMode="numeric" className={`${control} w-20`} value={pointBar} placeholder={label(currentIndex())} onChange={e => { setPointBar(e.target.value); setPointError(""); }} /></div>
-                <div className="flex flex-col gap-1"><label htmlFor="point-end" className="text-sm">Ends at bar</label>
-                  <input id="point-end" inputMode="numeric" className={`${control} w-20`} value={pointEnd} placeholder="end" onChange={e => { setPointEnd(e.target.value); setPointError(""); }} /></div>
-                <Button type="submit">Add point</Button>
-              </form>
-              {pointError && <p id="point-error" role="alert" className="text-sm text-danger">{pointError}</p>}
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Panel">
+                {(["Start points", "Bars", "Add point", "Voice"] as const).map(t => <Button key={t} aria-pressed={tab === t} onClick={() => setTab(t)}>{t}</Button>)}
+              </div>
+              {tab === "Start points" && (
+                <ul className="flex flex-wrap gap-2" aria-label="Start points">
+                  {points.map(p => {
+                    const own = ownPoints.includes(p);
+                    return (
+                      <li key={`${own}-${p.name}`} className="flex items-center">
+                        <Button className={own ? "rounded-r-none" : ""} onClick={() => setBarError(playRef({ name: p.name }) ?? "")}>{p.name} <span className="font-normal text-muted">· {p.bar}{p.end !== undefined ? `–${p.end}` : ""}</span></Button>
+                        {own && <Button className="rounded-l-none border-l-0 px-3" aria-label={`Remove ${p.name}`} onClick={() => removePoint(p.name)}>×</Button>}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {tab === "Bars" && (
+                <form className="flex flex-wrap items-center gap-2" onSubmit={e => { e.preventDefault(); submitRange(); }}>
+                  <label htmlFor="from" className="text-sm">From bar</label>
+                  <input id="from" inputMode="numeric" className={`${control} w-20`} value={fromInput} aria-invalid={!!barError} onChange={e => { setFromInput(e.target.value); setBarError(""); }} />
+                  <label htmlFor="to" className="text-sm">to bar</label>
+                  <input id="to" inputMode="numeric" placeholder="end" className={`${control} w-20`} value={toInput} aria-invalid={!!barError} onChange={e => { setToInput(e.target.value); setBarError(""); }} />
+                  <Button type="submit" primary>Play bars</Button>
+                  <label className="flex min-h-11 items-center gap-2 text-sm"><input type="checkbox" checked={countIn} onChange={e => setCountIn(e.target.checked)} />Count-in bar</label>
+                </form>
+              )}
+              {tab === "Add point" && (
+                <form className="flex flex-wrap items-end gap-2" onSubmit={e => { e.preventDefault(); submitPoint(); }}>
+                  <div className="flex flex-col gap-1"><label htmlFor="point-name" className="text-sm">Point name</label>
+                    <input id="point-name" className={`${control} w-44`} value={pointName} placeholder="second verse" aria-invalid={!!pointError} aria-describedby={pointError ? "point-error" : undefined} onChange={e => { setPointName(e.target.value); setPointError(""); }} /></div>
+                  <div className="flex flex-col gap-1"><label htmlFor="point-bar" className="text-sm">Starts at bar</label>
+                    <input id="point-bar" inputMode="numeric" className={`${control} w-20`} value={pointBar} placeholder={label(currentIndex())} onChange={e => { setPointBar(e.target.value); setPointError(""); }} /></div>
+                  <div className="flex flex-col gap-1"><label htmlFor="point-end" className="text-sm">Ends at bar</label>
+                    <input id="point-end" inputMode="numeric" className={`${control} w-20`} value={pointEnd} placeholder="end" onChange={e => { setPointEnd(e.target.value); setPointError(""); }} /></div>
+                  <Button type="submit">Add point</Button>
+                  {pointError && <p id="point-error" role="alert" className="w-full text-sm text-danger">{pointError}</p>}
+                </form>
+              )}
+              {tab === "Voice" && (
+                <div className="space-y-2 text-sm">
+                  <p>Tap 🎙 below, then say:</p>
+                  <ul className="list-disc space-y-1 pl-5 text-muted">
+                    <li>“from bar 9”, “from bar 5 to 12”, “from Il tuo fedel”</li>
+                    <li>“loop”, “loop bars 5 to 8”, “stop looping”, “stop at bar 20”</li>
+                    <li>“slower”, “faster”, “play”, “stop”</li>
+                    <li>“mark this as verse two”</li>
+                  </ul>
+                  <p className="text-muted">{voiceSupported ? "Headphones keep the piano out of the microphone." : "Voice commands need a browser with speech recognition, such as Chrome, Edge or Safari."}</p>
+                </div>
+              )}
             </div>
           </Card>
         )}
@@ -299,22 +309,62 @@ function Home({ songId, setSongId }: { songId: string; setSongId: (id: string) =
         {!loaded && !loadError && <p role="status" className="text-sm text-muted">Loading song…</p>}
         {loaded && <Card><Score xml={loaded.xml} measures={loaded.measures} song={loaded.song} time={time} transpose={transpose} onBar={playBar} /></Card>}
 
-        <Card>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-start">
-              <span className="text-sm">Tempo · {Math.round(speed * 100)}%</span>
-              <div className="flex gap-2"><Button aria-label="Slower" onClick={() => changeSpeed(speed * .9)}>−</Button><Button aria-label="Normal tempo" onClick={() => changeSpeed(1)}>100%</Button><Button aria-label="Faster" onClick={() => changeSpeed(speed * 1.1)}>+</Button></div>
-            </div>
-            <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-start">
-              <label htmlFor="key" className="text-sm">Key</label>
-              <select id="key" className={control} value={transpose} disabled={!loaded} onChange={e => changeTranspose(Number(e.target.value))}>
-                {keys.map(k => <option key={k} value={k}>{pitchLabel(k)}</option>)}
-              </select>
-            </div>
-            <label className="flex items-center gap-2 text-sm sm:self-center"><input type="checkbox" checked={countIn} onChange={e => setCountIn(e.target.checked)} />One-bar count-in before starting</label>
+        <section aria-label="Player" className="sticky bottom-0 z-10 -mx-4 space-y-2 border-t border-line bg-panel px-4 py-3 sm:mx-0 sm:rounded-xl sm:border">
+          <div className="flex items-baseline gap-3">
+            <p role="status" aria-live="polite" className={`min-w-0 flex-1 truncate text-sm ${barError || audioError ? "text-danger" : "text-muted"}`}>
+              {message || (active && loaded ? describe(active.first, active.last) : "")}
+              {audioError && <> <button className="underline" onClick={() => void ensureAudio().catch(() => {})}>Try again</button></>}
+            </p>
+            <span className="text-sm tabular-nums text-muted" aria-label="Position">{formatTime(time)} / {formatTime(loaded?.song.duration ?? 0)}</span>
           </div>
-        </Card>
+          <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
+            <div className="flex items-center gap-2">
+              <Button primary className="min-w-24" disabled={!loaded || audioState === "loading"} onClick={() => playing ? stop() : play()}>
+                {audioState === "loading" ? "Loading…" : playing ? "■ Stop" : "▶ Play"}
+              </Button>
+              <Button className="px-3!" aria-label="From the beginning" disabled={!loaded} onClick={() => playBar(0)}>⏮</Button>
+              <Button aria-pressed={loop} onClick={toggleLoop}>Loop</Button>
+              <Button className="px-3!" aria-pressed={listening} aria-label={listening ? "Stop listening" : "Voice commands"} disabled={!voiceSupported} onClick={toggleVoice}>🎙{listening ? " On" : ""}</Button>
+            </div>
+            <div className="flex gap-3">
+              <div role="group" aria-labelledby="tempo-label">
+                <span id="tempo-label" className="block text-xs text-muted">Tempo</span>
+                <div className="flex gap-1">
+                  <Button className="px-3!" aria-label="Slower" onClick={() => changeSpeed(speed - .05)}>−</Button>
+                  <Button className="w-14 px-1! whitespace-nowrap" aria-label={`Tempo ${Math.round(speed * 100)}%, reset to 100%`} onClick={() => changeSpeed(1)}>{Math.round(speed * 100)}%</Button>
+                  <Button className="px-3!" aria-label="Faster" onClick={() => changeSpeed(speed + .05)}>+</Button>
+                </div>
+              </div>
+              <div role="group" aria-labelledby="key-label">
+                <span id="key-label" className="block text-xs text-muted">Key</span>
+                <div className="flex gap-1">
+                  <Button className="px-3!" aria-label="Key down a semitone" disabled={!loaded || transpose <= Math.max(-6, bounds.min)} onClick={() => changeTranspose(transpose - 1)}>−</Button>
+                  <Button className="w-14 px-1! whitespace-nowrap" aria-label={`${pitchLabel(transpose)}, reset to original key`} disabled={!loaded} onClick={() => changeTranspose(0)}>{keyText}</Button>
+                  <Button className="px-3!" aria-label="Key up a semitone" disabled={!loaded || transpose >= Math.min(6, bounds.max)} onClick={() => changeTranspose(transpose + 1)}>+</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
+    </>
+  );
+}
+
+function Songs({ songId, choose }: { songId: string; choose: (id: string) => void }) {
+  return (
+    <>
+      <PageHeader title="Songs" description="Choose a song to practise. The piano plays the accompaniment; you sing the tune." />
+      <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line" aria-label="Songs">
+        {SONGS.map(s => (
+          <li key={s.id}>
+            <button className={`flex min-h-14 w-full items-center justify-between gap-3 px-4 py-2 text-left hover:bg-panel ${s.id === songId ? "bg-accent-soft" : "bg-paper"}`} aria-current={s.id === songId ? "true" : undefined} onClick={() => choose(s.id)}>
+              <span className="font-semibold">{s.title}</span>
+              <span className="text-sm text-muted">{s.composer}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
