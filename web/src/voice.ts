@@ -9,6 +9,8 @@ type RecognitionCtor = new () => Recognition;
 const Ctor = typeof window === 'undefined' ? undefined : (window as unknown as { SpeechRecognition?: RecognitionCtor; webkitSpeechRecognition?: RecognitionCtor }).SpeechRecognition
   ?? (window as unknown as { webkitSpeechRecognition?: RecognitionCtor }).webkitSpeechRecognition;
 export const voiceSupported = !!Ctor;
+/** iPhone: playing and listening at once needs a play-and-record session; playback alone keeps the silent switch from muting the piano. */
+const setSession = (type: string) => { const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession; if (session) session.type = type; };
 
 /**
  * Continuous command listening with the browser's speech recognition. Unlike
@@ -34,6 +36,7 @@ export class VoiceCommands {
     };
     recognition.onend = () => { if (this.listening) try { recognition.start(); } catch { this.end(); } };
     this.listening = true;
+    setSession('play-and-record');
     recognition.start();
     this.onState(true);
   }
@@ -41,6 +44,7 @@ export class VoiceCommands {
   private end(error?: string) {
     const was = this.listening;
     this.listening = false;
+    if (was) setSession('playback');
     this.recognition?.abort();
     this.recognition = undefined;
     if (was || error) this.onState(false, error);

@@ -3,6 +3,9 @@ import type { Piano } from './piano';
 
 /** One AudioContext, sampled piano and count-in click for the app. Created on the first user gesture. */
 export async function createAudio() {
+  // iPhone mutes web audio with the ring/silent switch unless the page asks for a playback session (Safari 17+).
+  const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+  if (session) session.type = 'playback';
   const context = new AudioContext();
   await context.resume();
   const master = context.createGain();

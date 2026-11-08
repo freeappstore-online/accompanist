@@ -55,6 +55,8 @@
 }
 
 @layer base {
+/* No double-tap zoom delay on the player's buttons. */
+button, a, input, label { touch-action: manipulation; }
 :root {
   --paper: #ffffff;
   --ink: #1a1a1a;

@@ -64,12 +64,12 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   const [listening, setListening] = useState(false), [voiceStatus, setVoiceStatus] = useState("");
   const [fromInput, setFromInput] = useState("1"), [toInput, setToInput] = useState(""), [loop, setLoop] = useState(false), [barError, setBarError] = useState("");
   const [active, setActive] = useState<{ first: number; last?: number } | null>(null);
-  const [tab, setTab] = useState<"Start points" | "Bars" | "Add point" | "Voice">("Start points");
+  const [tab, setTab] = useState<"Phrases" | "Bars" | "Add point" | "Voice">("Phrases");
   const [ownPoints, setOwnPoints] = useState<Point[]>(() => loadOwnPoints(songId));
   const [pointName, setPointName] = useState(""), [pointBar, setPointBar] = useState(""), [pointEnd, setPointEnd] = useState(""), [pointError, setPointError] = useState("");
   const phrases = SONGS.find(s => s.id === songId)?.phrases ?? [];
   const points = [...phrases, ...ownPoints];
-  const voice = useRef<VoiceCommands | null>(null);
+  const voice = useRef<VoiceCommands | null>(null), scoreRef = useRef<HTMLDivElement>(null);
   const loadedRef = useRef(loaded); loadedRef.current = loaded;
 
   useEffect(() => {
@@ -81,6 +81,19 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
       .catch(error => { if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : "The song could not load."); });
     return () => controller.abort();
   }, [songId, retry]);
+
+  // Keeps the phone screen on while the piano plays, where the browser allows it.
+  useEffect(() => {
+    if (!playing || !("wakeLock" in navigator)) return;
+    let lock: WakeLockSentinel | undefined, released = false;
+    const request = () => navigator.wakeLock.request("screen").then(l => { if (released) void l.release(); else lock = l; }).catch(() => {});
+    const onVisible = () => { if (document.visibilityState === "visible") void request(); };
+    void request(); document.addEventListener("visibilitychange", onVisible);
+    return () => { released = true; document.removeEventListener("visibilitychange", onVisible); void lock?.release(); };
+  }, [playing]);
+
+  // On a phone the controls fill the top of the page: bring the score up when playing starts.
+  useEffect(() => { if (playing && matchMedia("(max-width: 639px)").matches) scoreRef.current?.scrollIntoView({ block: "start", behavior: "smooth" }); }, [playing]);
 
   // Leaving the screen (About, Profile) stops playback and listening.
   useEffect(() => () => { voice.current?.stop(); audio.current?.destroy(); audio.current = null; audioPromise.current = null; }, []);
@@ -244,22 +257,27 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
 
   return (
     <>
-      <PageHeader title={info.title} description={`${info.composer}${info.poet ? ` · words by ${info.poet}` : ""}`} />
       <div className="space-y-4">
-        <a className="inline-block text-sm text-accent underline" href="/songs" onClick={e => { e.preventDefault(); onSongs(); }}>Change song</a>
+        <header className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold sm:text-3xl">{info.title}</h1>
+            <p className="truncate text-sm text-muted">{info.composer}{info.poet ? ` · words by ${info.poet}` : ""}</p>
+          </div>
+          <a className={`${button} shrink-0`} href="/songs" onClick={e => { e.preventDefault(); onSongs(); }}>Change song</a>
+        </header>
 
         {loaded && (
           <Card>
             <div className="space-y-3">
-              <div className="flex flex-wrap gap-2" role="group" aria-label="Panel">
-                {(["Start points", "Bars", "Add point", "Voice"] as const).map(t => <Button key={t} aria-pressed={tab === t} onClick={() => setTab(t)}>{t}</Button>)}
+              <div className="grid grid-cols-4 gap-1 sm:flex sm:gap-2" role="group" aria-label="Panel">
+                {(["Phrases", "Bars", "Add point", "Voice"] as const).map(t => <Button key={t} className="px-1! sm:px-4!" aria-pressed={tab === t} onClick={() => setTab(t)}>{t}</Button>)}
               </div>
-              {tab === "Start points" && (
-                <ul className="flex flex-wrap gap-2" aria-label="Start points">
+              {tab === "Phrases" && (
+                <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" aria-label="Start points">
                   {points.map(p => {
                     const own = ownPoints.includes(p);
                     return (
-                      <li key={`${own}-${p.name}`} className="flex items-center">
+                      <li key={`${own}-${p.name}`} className="flex shrink-0 items-center">
                         <Button className={own ? "rounded-r-none" : ""} onClick={() => setBarError(playRef({ name: p.name }) ?? "")}>{p.name} <span className="font-normal text-muted">· {p.bar}{p.end !== undefined ? `–${p.end}` : ""}</span></Button>
                         {own && <Button className="rounded-l-none border-l-0 px-3" aria-label={`Remove ${p.name}`} onClick={() => removePoint(p.name)}>×</Button>}
                       </li>
@@ -307,9 +325,9 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
 
         {loadError && <p role="alert" className="text-sm text-danger">{loadError} <button className="underline" onClick={() => setRetry(r => r + 1)}>Try again</button></p>}
         {!loaded && !loadError && <p role="status" className="text-sm text-muted">Loading song…</p>}
-        {loaded && <Card><Score xml={loaded.xml} measures={loaded.measures} song={loaded.song} time={time} transpose={transpose} onBar={playBar} /></Card>}
+        {loaded && <div ref={scoreRef} className="scroll-mt-20 sm:rounded-xl sm:border sm:border-line sm:bg-panel sm:p-6"><Score xml={loaded.xml} measures={loaded.measures} song={loaded.song} time={time} transpose={transpose} onBar={playBar} /></div>}
 
-        <section aria-label="Player" className="sticky bottom-0 z-10 -mx-4 space-y-2 border-t border-line bg-panel px-4 py-3 sm:mx-0 sm:rounded-xl sm:border">
+        <section aria-label="Player" className="sticky bottom-0 z-10 -mx-4 space-y-2 border-t border-line bg-panel px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:mx-0 sm:rounded-xl sm:border">
           <div className="flex items-baseline gap-3">
             <p role="status" aria-live="polite" className={`min-w-0 flex-1 truncate text-sm ${barError || audioError ? "text-danger" : "text-muted"}`}>
               {message || (active && loaded ? describe(active.first, active.last) : "")}
@@ -328,18 +346,18 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
             </div>
             <div className="flex gap-3">
               <div role="group" aria-labelledby="tempo-label">
-                <span id="tempo-label" className="block text-xs text-muted">Tempo</span>
+                <span id="tempo-label" className="hidden text-xs text-muted sm:block">Tempo</span>
                 <div className="flex gap-1">
                   <Button className="px-3!" aria-label="Slower" onClick={() => changeSpeed(speed - .05)}>−</Button>
-                  <Button className="w-14 px-1! whitespace-nowrap" aria-label={`Tempo ${Math.round(speed * 100)}%, reset to 100%`} onClick={() => changeSpeed(1)}>{Math.round(speed * 100)}%</Button>
+                  <Button className="w-16 px-1! whitespace-nowrap sm:w-14" aria-label={`Tempo ${Math.round(speed * 100)}%, reset to 100%`} onClick={() => changeSpeed(1)}><span className="sm:hidden" aria-hidden="true">♩</span>{Math.round(speed * 100)}%</Button>
                   <Button className="px-3!" aria-label="Faster" onClick={() => changeSpeed(speed + .05)}>+</Button>
                 </div>
               </div>
               <div role="group" aria-labelledby="key-label">
-                <span id="key-label" className="block text-xs text-muted">Key</span>
+                <span id="key-label" className="hidden text-xs text-muted sm:block">Key</span>
                 <div className="flex gap-1">
                   <Button className="px-3!" aria-label="Key down a semitone" disabled={!loaded || transpose <= Math.max(-6, bounds.min)} onClick={() => changeTranspose(transpose - 1)}>−</Button>
-                  <Button className="w-14 px-1! whitespace-nowrap" aria-label={`${pitchLabel(transpose)}, reset to original key`} disabled={!loaded} onClick={() => changeTranspose(0)}>{keyText}</Button>
+                  <Button className="w-16 px-1! whitespace-nowrap sm:w-14" aria-label={`${pitchLabel(transpose)}, reset to original key`} disabled={!loaded} onClick={() => changeTranspose(0)}><span className="sm:hidden" aria-hidden="true">Key </span>{keyText}</Button>
                   <Button className="px-3!" aria-label="Key up a semitone" disabled={!loaded || transpose >= Math.min(6, bounds.max)} onClick={() => changeTranspose(transpose + 1)}>+</Button>
                 </div>
               </div>

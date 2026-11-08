@@ -3,22 +3,26 @@ import type { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
 import { beatAtTime, type Song } from './music';
 import type { Measure } from './songs';
 
-const PAGE_SIZE = 4;
+const PHONE = '(max-width: 639px)';
 const button = 'min-h-11 rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink disabled:opacity-40';
 
 /** MusicXML notation with a cursor and page turns that follow playback (adapted from scoreplay's OriginalScore). */
 export default function Score({ xml, measures, song, time, transpose, onBar }: { xml: string; measures: Measure[]; song: Song; time: number; transpose: number; onBar: (index: number) => void }) {
   const [page, setPage] = useState(0), [loading, setLoading] = useState(true), [error, setError] = useState(''), [follow, setFollow] = useState(true);
   const [ready, setReady] = useState(0), [rendered, setRendered] = useState(0);
+  // Phones get two bars per page, drawn smaller, so the score fits the width without sideways scrolling.
+  const [phone, setPhone] = useState(() => matchMedia(PHONE).matches);
+  useEffect(() => { const query = matchMedia(PHONE), sync = () => setPhone(query.matches); query.addEventListener('change', sync); return () => query.removeEventListener('change', sync); }, []);
+  const PAGE_SIZE = phone ? 2 : 4;
   const container = useRef<HTMLDivElement>(null), viewport = useRef<HTMLDivElement>(null);
   const renderer = useRef<OpenSheetMusicDisplay | null>(null);
   const positions = useRef<number[]>([]), cursorIndex = useRef(0), redraw = useRef(() => {});
   const pages = Math.ceil(measures.length / PAGE_SIZE), safePage = Math.min(page, pages - 1);
-  const visible = useMemo(() => measures.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE), [measures, safePage]);
+  const visible = useMemo(() => measures.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE), [measures, safePage, PAGE_SIZE]);
   const beat = beatAtTime(song, time);
   const found = measures.findIndex(m => m.end > beat);
   const current = found < 0 ? measures.length - 1 : found;
-  useEffect(() => { if (follow) setPage(Math.floor(current / PAGE_SIZE)); }, [current, follow]);
+  useEffect(() => { if (follow) setPage(Math.floor(current / PAGE_SIZE)); }, [current, follow, PAGE_SIZE]);
   useEffect(() => {
     let cancelled = false, osmd: OpenSheetMusicDisplay | undefined, observer: ResizeObserver | undefined, frame = 0;
     setLoading(true); setError(''); renderer.current = null;
@@ -53,6 +57,7 @@ export default function Score({ xml, measures, song, time, transpose, onBar }: {
         osmd.EngravingRules.MaxMeasureToDrawNumber = 0;
         osmd.EngravingRules.MinMeasureToDrawIndex = safePage * PAGE_SIZE;
         osmd.EngravingRules.MaxMeasureToDrawIndex = Math.min((safePage + 1) * PAGE_SIZE - 1, measures.length - 1);
+        osmd.zoom = phone ? .7 : 1;
         osmd.render(); osmd.cursor.hide(); osmd.cursor.reset();
         const iterator = osmd.cursor.Iterator.clone();
         positions.current = [];
@@ -67,7 +72,7 @@ export default function Score({ xml, measures, song, time, transpose, onBar }: {
     };
     redraw.current = draw; draw();
     return () => { redraw.current = () => {}; };
-  }, [measures, safePage, ready]);
+  }, [measures, safePage, ready, phone, PAGE_SIZE]);
   useEffect(() => {
     const cursor = renderer.current?.cursor;
     if (!cursor || !positions.current.length || !visible.length) return;
@@ -86,8 +91,8 @@ export default function Score({ xml, measures, song, time, transpose, onBar }: {
   return <section className="space-y-4" aria-label="Score">
     <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm font-semibold">Bar {measures[current]?.label} of {measures[measures.length - 1]?.label}</p><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={follow} onChange={e => setFollow(e.target.checked)} />Turn pages with playback</label></div>
     {loading && <p role="status" className="text-sm text-muted">Loading score…</p>}{error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    <div ref={viewport} className="overflow-x-auto rounded-xl border border-line bg-score-paper" tabIndex={0} aria-label="Scrollable sheet music"><div ref={container} className="relative min-h-40 min-w-[640px] text-score-ink" role="img" aria-label={`Score, bars ${visible[0]?.label} to ${visible[visible.length - 1]?.label}`} /></div>
-    <div className="flex flex-wrap items-center justify-between gap-3"><button className={button} disabled={safePage === 0} onClick={() => { setFollow(false); setPage(safePage - 1); }}>← Previous page</button><span className="text-sm text-muted">Page {safePage + 1} of {pages}</span><button className={button} disabled={safePage >= pages - 1} onClick={() => { setFollow(false); setPage(safePage + 1); }}>Next page →</button></div>
+    <div ref={viewport} className="overflow-x-auto rounded-xl border border-line bg-score-paper" tabIndex={0} aria-label="Scrollable sheet music"><div ref={container} className="relative min-h-40 text-score-ink" role="img" aria-label={`Score, bars ${visible[0]?.label} to ${visible[visible.length - 1]?.label}`} /></div>
+    <div className="flex items-center justify-between gap-3"><button className={button} aria-label="Previous page" disabled={safePage === 0} onClick={() => { setFollow(false); setPage(safePage - 1); }}>←<span className="hidden sm:inline"> Previous page</span></button><span className="text-sm text-muted">Page {safePage + 1} of {pages}</span><button className={button} aria-label="Next page" disabled={safePage >= pages - 1} onClick={() => { setFollow(false); setPage(safePage + 1); }}><span className="hidden sm:inline">Next page </span>→</button></div>
     <div className="flex flex-wrap items-center gap-2"><span className="text-xs text-muted">Play from bar</span>{visible.map((m, i) => <button key={m.number} className={`${button} ${safePage * PAGE_SIZE + i === current ? 'border-accent bg-accent-soft' : ''}`} aria-label={`Play from bar ${m.label}`} aria-current={safePage * PAGE_SIZE + i === current ? 'step' : undefined} onClick={() => onBar(safePage * PAGE_SIZE + i)}>{m.label}</button>)}</div>
   </section>;
 }
