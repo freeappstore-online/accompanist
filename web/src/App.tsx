@@ -71,10 +71,11 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   const points = [...phrases, ...ownPoints];
   const voice = useRef<VoiceCommands | null>(null), scoreRef = useRef<HTMLDivElement>(null);
   const loadedRef = useRef(loaded); loadedRef.current = loaded;
+  const settings = useRef({ speed, transpose }); settings.current = { speed, transpose };
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoaded(null); setLoadError(""); setTime(0); setTranspose(0); setActive(null); setOwnPoints(loadOwnPoints(songId));
+    setLoaded(null); setLoadError(""); setTime(0); setTranspose(0); setActive(null); setLoop(false); setFromInput("1"); setToInput(""); setBarError(""); setOwnPoints(loadOwnPoints(songId));
     audio.current?.player.stop();
     loadSong(SONGS.find(s => s.id === songId)!, controller.signal)
       .then(song => { setLoaded(song); audio.current?.player.load(song.song, 0); })
@@ -104,8 +105,8 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
       setAudioState("loading"); setAudioError("");
       audioPromise.current = createAudio().then(created => {
         created.player.onUpdate = (t, p) => { setTime(t); setPlaying(p); };
-        created.player.speed = speed;
-        if (loadedRef.current) created.player.load(loadedRef.current.song, transpose);
+        created.player.speed = settings.current.speed;
+        if (loadedRef.current) created.player.load(loadedRef.current.song, settings.current.transpose);
         audio.current = created; setAudioState("ready");
         return created;
       }).catch(error => {
@@ -117,8 +118,9 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
     return audioPromise.current;
   };
 
-  const startAt = async (from: number, withCountIn = countIn, range: { until?: number; loop?: boolean } = {}) => {
+  const startAt = async (from: number, withCountIn = countIn, range: { until?: number; loop?: boolean; loopFrom?: number } = {}) => {
     if (!loaded) return;
+    audio.current?.resume(); // Within the tap, which phones require.
     const { player } = await ensureAudio();
     player.start(from, withCountIn, range);
   };
@@ -126,8 +128,8 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   const playRange = (first: number, last?: number, looping = loop) => {
     if (!loaded) return;
     const { song, measures } = loaded;
-    setActive({ first, last }); setLoop(looping && last !== undefined);
-    void startAt(timeAtBeat(song, measures[first].start), countIn, { until: last === undefined ? undefined : timeAtBeat(song, measures[last].end), loop: looping }).catch(() => {});
+    setActive({ first, last }); setLoop(looping); setBarError("");
+    void startAt(timeAtBeat(song, measures[first].start), countIn, { until: last !== undefined ? timeAtBeat(song, measures[last].end) : looping ? song.duration : undefined, loop: looping }).catch(() => {});
   };
   const playBar = (index: number) => playRange(index);
   /** Plays from a start reference to an optional stop reference, or returns why it can't. */
@@ -139,11 +141,13 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   };
   const label = (index: number) => loaded?.measures[index]?.label ?? "";
   const describe = (first: number, last?: number, looping = loop) =>
-    last === undefined ? `Playing from bar ${label(first)}` : `${looping ? "Looping" : "Playing"} bars ${label(first)}–${label(last)}`;
+    last === undefined ? `${looping ? "Looping" : "Playing"} from bar ${label(first)}` : `${looping ? "Looping" : "Playing"} bars ${label(first)}–${label(last)}`;
+  // A finished range rests exactly on the next bar's first beat; it should still show the bar it ended on.
+  const shownTime = !playing && time > 0 && time >= (audio.current?.player.until ?? Infinity) ? time - .001 : time;
   /** The measure being played, or where playback stopped. */
   const currentIndex = () => {
     if (!loaded) return 0;
-    const beat = beatAtTime(loaded.song, time + 1e-6);
+    const beat = beatAtTime(loaded.song, shownTime + 1e-6);
     return loaded.measures.reduce((found, m, i) => m.start <= beat ? i : found, 0);
   };
   const savePoint = (point: Point) => {
@@ -159,9 +163,23 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   const play = () => {
     if (!loaded) return;
     const player = audio.current?.player;
-    const keep = player && time < player.until ? { until: player.until, loop: player.loop } : {};
-    if (!keep.until) setActive(null);
-    void startAt(time >= loaded.song.duration ? 0 : time, countIn, keep).catch(() => {});
+    const keep = !!player && time < player.until && time < loaded.song.duration;
+    if (!keep) setActive(null);
+    setBarError("");
+    void startAt(time >= loaded.song.duration ? 0 : time, countIn, {
+      until: keep && player.until < Infinity ? player.until : loop ? loaded.song.duration : undefined,
+      loop, loopFrom: keep ? loopStart() : 0,
+    }).catch(() => {});
+  };
+  /** Where a repeat goes back to: the start of the current range, or of the song. */
+  const loopStart = () => loaded && active ? timeAtBeat(loaded.song, loaded.measures[active.first].start) : 0;
+  /** Loop is a mode: while on, whatever is playing repeats, to the end of the song if there is no stop point. */
+  const setLooping = (on: boolean) => {
+    setLoop(on);
+    const player = audio.current?.player;
+    if (!player || !loaded) return;
+    player.loop = on;
+    if (on && player.playing) { player.loopFrom = loopStart(); if (player.until === Infinity) player.until = loaded.song.duration; }
   };
   const changeSpeed = (value: number) => {
     const next = Math.round(Math.min(1.5, Math.max(.5, value)) * 100) / 100;
@@ -187,19 +205,14 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
       return `Stopping at the end of bar ${label(range.last)}`;
     }
     if (command.type === "loop") {
-      const player = audio.current?.player;
-      if (!command.on) { setLoop(false); if (player) player.loop = false; return "Loop off"; }
+      if (!command.on) { setLooping(false); return "Loop off"; }
       if (command.from) {
         const range = resolveRange(loaded.measures, points, phrases, command.from, command.to);
         if (typeof range === "string") return range;
         const last = range.last ?? range.first;
         playRange(range.first, last, true); return describe(range.first, last, true);
       }
-      setLoop(true);
-      if (player?.playing) {
-        if (player.until === Infinity) player.until = loaded.song.duration;
-        player.loop = true;
-      }
+      setLooping(true);
       return "Loop on";
     }
     if (command.type === "mark") {
@@ -228,7 +241,7 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
   const wholeNumber = (value: string) => /^\s*\d+\s*$/.test(value) ? Number(value) : null;
   const submitRange = () => {
     const from = wholeNumber(fromInput), to = toInput.trim() ? wholeNumber(toInput) : undefined;
-    const error = from === null || to === null ? "Enter whole bar numbers." : playRef({ bar: from }, to === undefined ? undefined : { bar: to }, loop && to !== undefined);
+    const error = from === null || to === null ? "Enter whole bar numbers." : playRef({ bar: from }, to === undefined ? undefined : { bar: to });
     setBarError(error ?? "");
   };
   const submitPoint = () => {
@@ -240,19 +253,11 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
     setPointError(error);
     if (error || bar === null || end === null) return;
     savePoint({ name, bar, ...(end === undefined ? {} : { end }) });
-    setPointName(""); setPointBar(""); setPointEnd("");
+    setPointName(""); setPointBar(""); setPointEnd(""); setTab("Phrases");
   };
 
   const info = SONGS.find(s => s.id === songId)!;
   const keyText = transpose === 0 ? "0" : `${transpose > 0 ? "+" : "−"}${Math.abs(transpose)}`;
-  const toggleLoop = () => {
-    const next = !loop; setLoop(next);
-    const player = audio.current?.player;
-    if (player?.playing) {
-      if (next && player.until === Infinity && loaded) player.until = loaded.song.duration;
-      player.loop = next;
-    }
-  };
   const message = barError || audioError || voiceStatus;
 
   return (
@@ -325,11 +330,11 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
 
         {loadError && <p role="alert" className="text-sm text-danger">{loadError} <button className="underline" onClick={() => setRetry(r => r + 1)}>Try again</button></p>}
         {!loaded && !loadError && <p role="status" className="text-sm text-muted">Loading song…</p>}
-        {loaded && <div ref={scoreRef} className="scroll-mt-20 sm:rounded-xl sm:border sm:border-line sm:bg-panel sm:p-6"><Score xml={loaded.xml} measures={loaded.measures} song={loaded.song} time={time} transpose={transpose} onBar={playBar} /></div>}
+        {loaded && <div ref={scoreRef} className="scroll-mt-20 sm:rounded-xl sm:border sm:border-line sm:bg-panel sm:p-6"><Score xml={loaded.xml} measures={loaded.measures} song={loaded.song} time={shownTime} transpose={transpose} onBar={playBar} /></div>}
 
         <section aria-label="Player" className="sticky bottom-0 z-10 -mx-4 space-y-2 border-t border-line bg-panel px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:mx-0 sm:rounded-xl sm:border">
           <div className="flex items-baseline gap-3">
-            <p role="status" aria-live="polite" className={`min-w-0 flex-1 truncate text-sm ${barError || audioError ? "text-danger" : "text-muted"}`}>
+            <p role="status" aria-live="polite" className={`min-w-0 flex-1 text-sm ${barError || audioError ? "text-danger" : "text-muted"}`}>
               {message || (active && loaded ? describe(active.first, active.last) : "")}
               {audioError && <> <button className="underline" onClick={() => void ensureAudio().catch(() => {})}>Try again</button></>}
             </p>
@@ -341,16 +346,16 @@ function Home({ songId, onSongs }: { songId: string; onSongs: () => void }) {
                 {audioState === "loading" ? "Loading…" : playing ? "■ Stop" : "▶ Play"}
               </Button>
               <Button className="px-3!" aria-label="From the beginning" disabled={!loaded} onClick={() => playBar(0)}>⏮</Button>
-              <Button aria-pressed={loop} onClick={toggleLoop}>Loop</Button>
+              <Button aria-pressed={loop} onClick={() => setLooping(!loop)}>Loop</Button>
               <Button className="px-3!" aria-pressed={listening} aria-label={listening ? "Stop listening" : "Voice commands"} disabled={!voiceSupported} onClick={toggleVoice}>🎙{listening ? " On" : ""}</Button>
             </div>
             <div className="flex gap-3">
               <div role="group" aria-labelledby="tempo-label">
                 <span id="tempo-label" className="hidden text-xs text-muted sm:block">Tempo</span>
                 <div className="flex gap-1">
-                  <Button className="px-3!" aria-label="Slower" onClick={() => changeSpeed(speed - .05)}>−</Button>
+                  <Button className="px-3!" aria-label="Slower" disabled={speed <= .5} onClick={() => changeSpeed(speed - .05)}>−</Button>
                   <Button className="w-16 px-1! whitespace-nowrap sm:w-14" aria-label={`Tempo ${Math.round(speed * 100)}%, reset to 100%`} onClick={() => changeSpeed(1)}><span className="sm:hidden" aria-hidden="true">♩</span>{Math.round(speed * 100)}%</Button>
-                  <Button className="px-3!" aria-label="Faster" onClick={() => changeSpeed(speed + .05)}>+</Button>
+                  <Button className="px-3!" aria-label="Faster" disabled={speed >= 1.5} onClick={() => changeSpeed(speed + .05)}>+</Button>
                 </div>
               </div>
               <div role="group" aria-labelledby="key-label">

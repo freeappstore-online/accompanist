@@ -42,7 +42,7 @@ export class Accompanist {
   /** Where playback stops (song seconds), and whether it then jumps back to `loopFrom`. */
   until = Infinity;
   loop = false;
-  private loopFrom = 0;
+  loopFrom = 0;
   onUpdate: (time: number, playing: boolean) => void = () => {};
 
   constructor(private clock: () => number, private instrument: Instrument, private click: (when: number, accent: boolean) => void) {}
@@ -58,24 +58,26 @@ export class Accompanist {
   load(song: Song, transpose = 0) {
     this.stop();
     this.song = song; this.transposeBy = transpose; this.position = 0;
+    this.until = Infinity; this.loop = false;
     this.events = noteEvents(song, transpose);
     this.onUpdate(0, false);
   }
   setTranspose(semitones: number) {
     if (!this.song) return;
-    const time = this.time, playing = this.playing;
+    const time = this.time, playing = this.playing, { until, loop, loopFrom } = this;
     this.load(this.song, semitones);
-    this.position = time;
-    if (playing) this.start(time, false, { until: this.until, loop: this.loop });
+    this.position = time; this.until = until; this.loop = loop; this.loopFrom = loopFrom;
+    if (playing) this.start(time, false, { until, loop, loopFrom });
+    else this.onUpdate(time, false);
   }
-  /** Plays from `from` (song seconds) to `until`, looping back to `from` when `loop` is set. */
-  start(from: number, countIn: boolean, range: { until?: number; loop?: boolean } = {}) {
+  /** Plays from `from` (song seconds) to `until`; when `loop` is set it then jumps to `loopFrom` (default: `from`). */
+  start(from: number, countIn: boolean, range: { until?: number; loop?: boolean; loopFrom?: number } = {}) {
     if (!this.song) return;
     this.halt();
     from = Math.max(0, Math.min(from, this.song.duration));
     this.until = range.until && range.until > from ? range.until : Infinity;
     this.loop = !!range.loop && this.until < Infinity;
-    this.loopFrom = from;
+    this.loopFrom = range.loopFrom ?? from;
     this.instrument.session();
     let audio = this.clock() + START_DELAY;
     if (countIn) {

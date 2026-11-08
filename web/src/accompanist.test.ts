@@ -88,3 +88,42 @@ it('loops a range back to its start', () => {
   expect(a.time).toBeGreaterThanOrEqual(1);
   expect(a.time).toBeLessThan(2);
 });
+
+it('keeps the start of a loop when the key changes mid-phrase', () => {
+  const a = make();
+  a.start(1, false, { until: 3, loop: true });
+  now += 1.5;
+  a.setTranspose(2);
+  expect(a.until).toBe(3);
+  expect(a.loop).toBe(true);
+  expect(a.loopFrom).toBe(1);
+});
+
+it('loops back to loopFrom, not to where playback resumed', () => {
+  const a = make();
+  a.start(2.5, false, { until: 3, loop: true, loopFrom: 1 });
+  now += .6;
+  a.tick();
+  expect(a.time).toBeLessThan(1.1);
+  expect(a.playing).toBe(true);
+});
+
+it('keeps the position and reports it when the key changes while stopped', () => {
+  const a = make();
+  const updates: number[] = [];
+  a.start(2, false);
+  a.stop();
+  a.onUpdate = t => updates.push(t);
+  a.setTranspose(1);
+  expect(a.time).toBe(2);
+  expect(updates.at(-1)).toBe(2);
+});
+
+it('forgets the stop point when another song loads', () => {
+  const a = make();
+  a.start(0, false, { until: 2, loop: true });
+  a.stop();
+  a.load(song);
+  expect(a.until).toBe(Infinity);
+  expect(a.loop).toBe(false);
+});

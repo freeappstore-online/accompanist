@@ -25,5 +25,10 @@ export async function createAudio() {
     osc.start(when); osc.stop(when + .04);
   };
   const player = new Accompanist(() => context.currentTime, piano, click);
-  return { player, destroy: () => { player.stop(); piano.destroy(); void context.close(); } };
+  const resume = () => { if (context.state !== 'running' && context.state !== 'closed') void context.resume().catch(() => {}); };
+  // Phones suspend audio for the lock screen, calls and when the microphone starts.
+  const wake = () => { if (document.visibilityState === 'visible') resume(); };
+  context.addEventListener('statechange', wake);
+  document.addEventListener('visibilitychange', wake);
+  return { player, resume, destroy: () => { context.removeEventListener('statechange', wake); document.removeEventListener('visibilitychange', wake); player.stop(); piano.destroy(); void context.close(); } };
 }
