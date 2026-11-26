@@ -10,7 +10,7 @@
     "generate:icons": "pwa-assets-generator --manifest=false"
   },
   "dependencies": {
-    "@freeappstore/sdk": "^0.17.2",
+    "@freeappstore/sdk": "^0.20.0",
     "@tonejs/midi": "^2.0.28",
     "opensheetmusicdisplay": "^2.2.1",
     "react": "^19",
